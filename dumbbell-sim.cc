@@ -524,6 +524,7 @@ int main(int argc, char *argv[])
     std::string access_bandwidth = "10Mbps";
     std::string bottleneck_delay = "50ms";
     std::string access_delay = "1ms";
+    uint32_t queuesize = 90;
     uint32_t run = 0;
     double simstop = 0.0;
     bool pcaptracing = false;
@@ -545,10 +546,17 @@ int main(int argc, char *argv[])
             simstop);
     cmd.AddValue("tracing", "Flag to enable/disable pcap tracing",
             pcaptracing);
+    cmd.AddValue("queue_size",
+            "Maximum amount of packets allowed inside the queue", queuesize);
     cmd.Parse(argc, argv);
 
     ns3::SeedManager::SetSeed(1);
     ns3::SeedManager::SetRun(run);
+
+    ns3::Config::SetDefault("ns3::DropTailQueue::Mode",
+            ns3::StringValue("QUEUE_MODE_PACKETS"));
+    ns3::Config::SetDefault("ns3::DropTailQueue::MaxPackets",
+            ns3::UintegerValue(queuesize));
 
     if (transport_prot.compare("TcpTahoe") == 0)
         ns3::Config::SetDefault("ns3::TcpL4Protocol::SocketType",
